@@ -58,3 +58,54 @@ void Gramatica::SetP(const std::set<Productie>& P) { m_P = P; }
 char Gramatica::GetS() const { return m_S; }
 
 void Gramatica::SetS(char S) { m_S = S; }
+
+void Gramatica::generare(int nrCuvinte) {
+	m_cuvinteGenerate.clear(); // Goleste set ul de cuvinte generate
+	std::string cuvantGenerat;
+
+
+	std::random_device rd;
+	std::mt19937 eng(rd());
+	
+
+	while (nrCuvinte > 0) {
+	    cuvantGenerat = std::string(1, m_S); // Pornim de la simbolul de start
+
+		while (true) {
+			std::set<std::pair<std::string, std::string>> productiiAplicabile;
+
+			for (const Productie& prod : m_P) {
+				if (cuvantGenerat.find(prod.first) != std::string::npos) {
+					productiiAplicabile.insert(prod);
+				}
+			}
+
+			if (productiiAplicabile.empty()) {
+				m_cuvinteGenerate.insert(cuvantGenerat);
+				break;
+			}
+            
+			std::uniform_int_distribution<int> distr(0, productiiAplicabile.size() - 1);
+			int indexProductie = distr(eng);
+
+
+
+			// Find the selected production using iterators
+			auto it = productiiAplicabile.begin();
+			std::advance(it, indexProductie);
+			const Productie& selectedProd = *it;
+
+			
+			int pozitieInlocuire = cuvantGenerat.find(selectedProd.first);
+			
+			cuvantGenerat.replace(pozitieInlocuire, selectedProd.first.length(), selectedProd.second);
+		}
+
+		nrCuvinte--;
+	}
+
+	// Afiseaza cuvintele generate
+	for (const std::string& cuvant : m_cuvinteGenerate) {
+		std::cout << cuvant << std::endl;
+	}
+}
