@@ -1,8 +1,11 @@
 3
-S B C
+S A C
 4
 a b c @
 S
-2
-S a
-S b
+5
+S aA
+S abS
+S aSAb
+A a
+A aAb

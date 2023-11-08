@@ -17,6 +17,7 @@ class Gramatica {
 	std::set<Productie> m_P;
 	char m_S;
 	std::set<std::string> m_cuvinteGenerate;
+
 public:
 	Gramatica();
 	Gramatica(const std::set<char>& VN, const std::set<char>& VT, const std::set<Productie>& P, char S);

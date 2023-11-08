@@ -26,6 +26,12 @@ std::istream& operator>>(std::istream& in, Gramatica& gramatica) {
 		in >> stanga >> dreapta;
 		gramatica.m_P.emplace(stanga, dreapta);
 	}
+	gramatica.m_VN.erase('\0'); // Remove null character from m_VN
+	gramatica.m_VT.erase('\0'); // Remove null character from m_VT
+	std::set<Productie>::iterator it = gramatica.m_P.begin();
+	if (!gramatica.m_P.empty())
+		gramatica.m_P.erase(it);
+
 	return in;
 }
 
@@ -68,7 +74,7 @@ void Gramatica::generare(int nrCuvinte) {
 	std::mt19937 eng(rd());
 	
 
-	while (nrCuvinte > 0) {
+	while (m_cuvinteGenerate.size() < nrCuvinte) {
 	    cuvantGenerat = std::string(1, m_S); // Pornim de la simbolul de start
 
 		while (true) {
@@ -96,16 +102,28 @@ void Gramatica::generare(int nrCuvinte) {
 			const Productie& selectedProd = *it;
 
 			
-			int pozitieInlocuire = cuvantGenerat.find(selectedProd.first);
+			//pentru a alege random o pozitie in care se poate aplica o productie
+			std::vector<size_t> pozitiiPosibile;
+			size_t pozitie = cuvantGenerat.find(selectedProd.first);
+
+			while (pozitie != std::string::npos) {
+				pozitiiPosibile.push_back(pozitie);
+				pozitie = cuvantGenerat.find(selectedProd.first, pozitie + 1);
+			}
+
+			std::uniform_int_distribution<int> distr2(0, pozitiiPosibile.size() - 1);
+			int pozitieInlocuire = pozitiiPosibile[distr2(eng)];
+
+			//int pozitieInlocuire = cuvantGenerat.find(selectedProd.first);
 			
+			std::cout << cuvantGenerat << " => ";
 			cuvantGenerat.replace(pozitieInlocuire, selectedProd.first.length(), selectedProd.second);
 		}
-
-		nrCuvinte--;
+		std::cout << cuvantGenerat << "\n\n";
 	}
 
 	// Afiseaza cuvintele generate
-	for (const std::string& cuvant : m_cuvinteGenerate) {
-		std::cout << cuvant << std::endl;
-	}
+	//for (const std::string& cuvant : m_cuvinteGenerate) {
+	//	std::cout << cuvant << std::endl;
+	//}
 }
