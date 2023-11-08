@@ -10,6 +10,8 @@ int main() {
 	fin >> gramatica;
 	std::cout << gramatica;
 
+	gramatica.verificare();
+
 	gramatica.generare(7);
 	fin.close();
 }

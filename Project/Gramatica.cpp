@@ -45,7 +45,7 @@ std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica) {
 	out << "}, " << gramatica.m_S << ", P}\n";
 	for (const auto& productie : gramatica.m_P)
 		if (!productie.first.empty())
-			out << productie.first << "->" << productie.second << "\n";
+			out << productie.first << "->" << productie.second << "\n\n";
 	return out;
 }
 
@@ -117,6 +117,9 @@ void Gramatica::generare(int nrCuvinte) {
 			//int pozitieInlocuire = cuvantGenerat.find(selectedProd.first);
 			
 			std::cout << cuvantGenerat << " => ";
+			if(selectedProd.second == "@")
+			cuvantGenerat.replace(pozitieInlocuire, selectedProd.first.length(), "");
+			else
 			cuvantGenerat.replace(pozitieInlocuire, selectedProd.first.length(), selectedProd.second);
 		}
 		std::cout << cuvantGenerat << "\n\n";
@@ -126,4 +129,89 @@ void Gramatica::generare(int nrCuvinte) {
 	//for (const std::string& cuvant : m_cuvinteGenerate) {
 	//	std::cout << cuvant << std::endl;
 	//}
+}
+
+bool Gramatica::verificare()
+{
+	if (m_VN.empty() || m_VT.empty()) {
+		std::cout << "gramatica invalida : VN sau NT sunt vide \n";
+		return false;
+	}
+	// m_VT si m_VN intersectie nula
+	for (auto caracter : m_VN)
+	{
+		if (m_VT.find(caracter) != m_VT.end())
+		{
+			std::cout << "gramatica invalida : caractere din VN se afla in VT \n";
+			return false;
+		}
+	}
+	for (auto caracter : m_VT)
+	{
+		if (m_VN.find(caracter) != m_VN.end())
+		{
+			std::cout << "gramatica invalida : caractere din VT se afla in VN \n";
+			return false;
+		}
+	}
+
+	// (2) S în VN
+	if (m_VN.find(m_S) == m_VN.end()) {
+		std::cout << "gramatica invalida : m_S nu se afla in VN\n";
+		return false;
+	}
+
+
+	// fiecare productie sa aiba macar un neterminal in stanga
+	bool areNeterminal;
+	for (const auto& productie : m_P) {
+		areNeterminal = false;
+
+		for (auto caracter : m_VN)
+		{
+			if (productie.first.find(caracter) != std::string::npos)
+			{
+				areNeterminal = true;
+			}
+		}
+		if (areNeterminal == false)
+		{
+			std::cout << "gramatica invalida : exista productie care nu are nici macar un neterminal in stanga \n";
+			return false;
+		}
+	}
+
+	for (auto& productie : m_P)
+	{
+		for (char c : productie.first)
+		{
+			if (m_VN.find(c) == m_VN.end()  && m_VT.find(c) == m_VT.end())
+			{
+				std::cout << "gramatica invalida : productiile contin caractere care nu sunt in VN sau VT \n";
+				return false;
+			}
+		}
+		for (char c : productie.second)
+		{
+			if (m_VN.find(c) == m_VN.end() && m_VT.find(c) == m_VT.end())
+			{
+				std::cout << "gramatica invalida: productiile contin caractere care nu sunt in VN sau VT \n";
+				return false;
+			}
+		}
+
+	}
+	
+	bool exista_producie_cu_S = false;
+	for (const auto& prod : m_P) {
+		if (prod.first[0]==m_S && prod.first.size()== 1) {
+			exista_producie_cu_S = true;
+		}
+	}
+	if(exista_producie_cu_S==false)
+		std::cout << "gramatica invalida : nu exista productie in care doar m_S este in stanga \n";
+	else 
+		std::cout << "gramatica valida : \n";
+
+	return exista_producie_cu_S;
 }

@@ -35,5 +35,6 @@ public:
 	void SetS(char S);
 
 	void generare(int nrCuvinte);
+	bool verificare();
 
 };
