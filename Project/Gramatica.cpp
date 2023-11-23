@@ -6,46 +6,72 @@ Gramatica::Gramatica(const std::set<char>& VN, const std::set<char>& VT, const s
 
 Gramatica::~Gramatica() {}
 
-std::istream& operator>>(std::istream& in, Gramatica& gramatica) {
+std::istream& operator>>(std::istream& in, Gramatica& gramatica) 
+{
 	int nrNeterminale, nrTerminale, nrProductii;
 	in >> nrNeterminale;
-	for (int i = 0; i < nrNeterminale; i++) {
+
+	for (int i = 0; i < nrNeterminale; i++) 
+	{
 		char neterminal;
 		in >> neterminal;
 		gramatica.m_VN.insert(neterminal);
 	}
+
 	in >> nrTerminale;
-	for (int i = 0; i < nrTerminale; i++) {
+
+	for (int i = 0; i < nrTerminale; i++) 
+	{
 		char terminal;
 		in >> terminal;
 		gramatica.m_VT.insert(terminal);
 	}
+
 	in >> gramatica.m_S >> nrProductii;
 	std::string stanga, dreapta;
-	for (int i = 0; i < nrProductii; i++) {
+
+	for (int i = 0; i < nrProductii; i++) 
+	{
 		in >> stanga >> dreapta;
 		gramatica.m_P.emplace(stanga, dreapta);
 	}
+
 	gramatica.m_VN.erase('\0'); // Remove null character from m_VN
 	gramatica.m_VT.erase('\0'); // Remove null character from m_VT
 	std::set<Productie>::iterator it = gramatica.m_P.begin();
+
 	if (!gramatica.m_P.empty())
+	{
 		gramatica.m_P.erase(it);
+	}
 
 	return in;
 }
 
-std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica) {
+std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica) 
+{
 	out << "G = ({";
+
 	for (char ch : gramatica.m_VN)
+	{
 		out << ch << " ";
+	}
+
 	out << "}, {";
+
 	for (char ch : gramatica.m_VT)
+	{
 		out << ch << " ";
+	}
 	out << "}, " << gramatica.m_S << ", P}\n";
+
 	for (const auto& productie : gramatica.m_P)
+	{
 		if (!productie.first.empty())
+		{
 			out << productie.first << "->" << productie.second << "\n\n";
+		}
+	}
 	return out;
 }
 
@@ -65,7 +91,8 @@ char Gramatica::GetS() const { return m_S; }
 
 void Gramatica::SetS(char S) { m_S = S; }
 
-void Gramatica::generare(int nrCuvinte) {
+void Gramatica::generare(int nrCuvinte) 
+{
 	m_cuvinteGenerate.clear(); // Goleste set ul de cuvinte generate
 	std::string cuvantGenerat;
 
@@ -74,19 +101,24 @@ void Gramatica::generare(int nrCuvinte) {
 	std::mt19937 eng(rd());
 	
 
-	while (m_cuvinteGenerate.size() < nrCuvinte) {
+	while (m_cuvinteGenerate.size() < nrCuvinte) 
+	{
 	    cuvantGenerat = std::string(1, m_S); // Pornim de la simbolul de start
 
-		while (true) {
+		while (true) 
+		{
 			std::set<std::pair<std::string, std::string>> productiiAplicabile;
 
-			for (const Productie& prod : m_P) {
-				if (cuvantGenerat.find(prod.first) != std::string::npos) {
+			for (const Productie& prod : m_P)
+			{
+				if (cuvantGenerat.find(prod.first) != std::string::npos) 
+				{
 					productiiAplicabile.insert(prod);
 				}
 			}
 
-			if (productiiAplicabile.empty()) {
+			if (productiiAplicabile.empty()) 
+			{
 				m_cuvinteGenerate.insert(cuvantGenerat);
 				break;
 			}
@@ -106,7 +138,8 @@ void Gramatica::generare(int nrCuvinte) {
 			std::vector<size_t> pozitiiPosibile;
 			size_t pozitie = cuvantGenerat.find(selectedProd.first);
 
-			while (pozitie != std::string::npos) {
+			while (pozitie != std::string::npos) 
+			{
 				pozitiiPosibile.push_back(pozitie);
 				pozitie = cuvantGenerat.find(selectedProd.first, pozitie + 1);
 			}
@@ -133,7 +166,8 @@ void Gramatica::generare(int nrCuvinte) {
 
 bool Gramatica::verificare()
 {
-	if (m_VN.empty() || m_VT.empty()) {
+	if (m_VN.empty() || m_VT.empty()) 
+	{
 		std::cout << "gramatica invalida : VN sau NT sunt vide \n";
 		return false;
 	}
@@ -156,7 +190,8 @@ bool Gramatica::verificare()
 	}
 
 	// (2) S în VN
-	if (m_VN.find(m_S) == m_VN.end()) {
+	if (m_VN.find(m_S) == m_VN.end()) 
+	{
 		std::cout << "gramatica invalida : m_S nu se afla in VN\n";
 		return false;
 	}
@@ -164,7 +199,8 @@ bool Gramatica::verificare()
 
 	// fiecare productie sa aiba macar un neterminal in stanga
 	bool areNeterminal;
-	for (const auto& productie : m_P) {
+	for (const auto& productie : m_P) 
+	{
 		areNeterminal = false;
 
 		for (auto caracter : m_VN)
@@ -203,8 +239,10 @@ bool Gramatica::verificare()
 	}
 	
 	bool exista_producie_cu_S = false;
-	for (const auto& prod : m_P) {
-		if (prod.first[0]==m_S && prod.first.size()== 1) {
+	for (const auto& prod : m_P) 
+	{
+		if (prod.first[0]==m_S && prod.first.size()== 1) 
+		{
 			exista_producie_cu_S = true;
 		}
 	}
@@ -214,4 +252,56 @@ bool Gramatica::verificare()
 		std::cout << "gramatica valida : \n";
 
 	return exista_producie_cu_S;
+}
+
+bool Gramatica::isRegular(const Gramatica& gramatica)
+{
+	for (const auto& productie : gramatica.m_P)
+	{
+		for (auto it = productie.first.begin(); it != productie.first.end(); it++)
+		{
+			int numberLetters = 0;
+			if (*it != NULL)
+			{
+				numberLetters++;
+			}
+			if (std::islower(*it))
+			{
+				return false;
+			}
+			if (numberLetters > 1)
+			{
+				return false;
+			}
+			//daca in partea stanga exista mai mult de un singur caracter, atunci returneaza fals. Daca acel caracter este mic, adica din multumea terminalelor, returneaza fals again.
+		}
+
+		for (auto it = productie.second.begin(); it != productie.second.end(); it++)
+		{
+			int numberLetters = 0;
+			bool smallLetter = false, bigLetter = false;
+			if (*it != NULL)
+			{
+				numberLetters++;
+			}
+			if (numberLetters > 2)
+			{
+				return false; //daca sunt mai mult de 2 caractere returnam false
+			}
+			if (std::islower(*it))
+			{
+				smallLetter = true;
+			}
+			else if (std::isupper(*it))
+			{
+				bigLetter = true;
+			}
+			if (bigLetter == true && smallLetter == false) //daca sunt doar caractere mari, returneaza false
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
 }

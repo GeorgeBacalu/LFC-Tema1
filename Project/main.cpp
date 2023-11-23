@@ -13,5 +13,15 @@ int main() {
 	gramatica.verificare();
 
 	gramatica.generare(7);
+
+	if (gramatica.isRegular(gramatica) == true)
+	{
+		std::cout << std::endl << "Este regulata." << std::endl;
+	}
+	else
+	{
+		std::cout << std::endl << "Nu este regulata." << std::endl;
+	}
+
 	fin.close();
 }

@@ -36,5 +36,6 @@ public:
 
 	void generare(int nrCuvinte);
 	bool verificare();
+	bool isRegular(const Gramatica& gramatica);
 
 };
