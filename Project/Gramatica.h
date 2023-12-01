@@ -1,13 +1,10 @@
 #pragma once
 
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <set>
 #include <vector>
 #include <random>
-
-
 
 using Productie = std::pair<std::string, std::string>;
 
@@ -18,10 +15,16 @@ class Gramatica {
 	char m_S;
 	std::set<std::string> m_cuvinteGenerate;
 
+	bool verificareSeturiVide() const;
+	bool verificareIntersectieVNVT() const;
+	bool verificareSInVN() const;
+	bool verificareProductii() const;
+	bool verificareCaractereProductii() const;
+	bool verificareProductieCuS() const;
 public:
 	Gramatica();
 	Gramatica(const std::set<char>& VN, const std::set<char>& VT, const std::set<Productie>& P, char S);
-	~Gramatica();
+	~Gramatica() = default;
 	friend std::istream& operator>>(std::istream& in, Gramatica& gramatica);
 	friend std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica);
 
@@ -35,6 +38,6 @@ public:
 	void SetS(char S);
 
 	void generare(int nrCuvinte);
-	bool verificare();
-
+	bool verificare() const;
+	bool esteRegulata() const;
 };

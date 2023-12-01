@@ -1,4 +1,5 @@
 #include "Gramatica.h"
+#include <fstream>
 
 int main() {
 	Gramatica gramatica;
@@ -9,9 +10,14 @@ int main() {
 	}
 	fin >> gramatica;
 	std::cout << gramatica;
-
-	gramatica.verificare();
-
-	gramatica.generare(7);
+	if (gramatica.verificare())
+	{
+		std::cout << "Gramatica este valida\n";
+		if (gramatica.esteRegulata())
+		{
+			std::cout << "Gramatica este regulata\n\n";
+			gramatica.generare(3);
+		}
+	}
 	fin.close();
 }
