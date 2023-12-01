@@ -18,6 +18,9 @@
     <ClInclude Include="Gramatica.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AutomatFinit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Gramatica.cpp">
@@ -26,9 +29,15 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AutomatFinit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="inputAutomatFinit.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
