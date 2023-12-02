@@ -3,10 +3,11 @@ S A C
 4
 a b c @
 S
-7
+8
 S aAC
 S abS
 S aSAb
+SA bab
 A a
 A ccC
 C bb
