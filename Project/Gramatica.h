@@ -1,10 +1,6 @@
 #pragma once
 
 #include "AutomatFinit.h"
-#include <iostream>
-#include <string>
-#include <set>
-#include <vector>
 #include <random>
 
 using Productie = std::pair<std::string, std::string>;
@@ -38,7 +34,7 @@ public:
 	char GetS() const;
 	void SetS(char S);
 
-	void generare(int nrCuvinte);
+	std::set<std::string> generare(int nrCuvinte);
 	bool verificare() const;
 	bool esteRegulata() const;
 	AutomatFinit transformaInAutomatFinit() const;

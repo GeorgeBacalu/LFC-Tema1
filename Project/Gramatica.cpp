@@ -100,7 +100,7 @@ void Gramatica::SetS(char S)
 	m_S = S;
 }
 
-void Gramatica::generare(int nrCuvinte)
+std::set<std::string> Gramatica::generare(int nrCuvinte)
 {
 	m_cuvinteGenerate.clear();
 	std::string cuvantGenerat;
@@ -147,6 +147,7 @@ void Gramatica::generare(int nrCuvinte)
 		}
 		std::cout << cuvantGenerat << "\n\n";
 	}
+	return m_cuvinteGenerate;
 }
 
 bool Gramatica::verificare() const
@@ -301,11 +302,8 @@ AutomatFinit Gramatica::transformaInAutomatFinit() const
 		std::string stare1{ stanga };
 		char simbol = dreapta[0];
 		std::string stare2 = dreapta.size() == 2 ? std::string{ dreapta[1] } : "T";
-		if (simbol != '@')
-		{
-			functieTranzitie[{stare1, simbol}].push_back(stare2);
-		}
-		if (dreapta.size() == 1 && simbol == '@')
+		functieTranzitie[{stare1, simbol}].push_back(stare2);
+		if (dreapta.size() == 1)
 		{
 			stariFinale.insert(stare1);
 		}
