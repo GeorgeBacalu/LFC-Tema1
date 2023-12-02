@@ -4,18 +4,18 @@ Gramatica::Gramatica() : m_VN{ {} }, m_VT{ {} }, m_P{ {} }, m_S{ 'S' } {}
 
 Gramatica::Gramatica(const std::set<char>& VN, const std::set<char>& VT, const std::set<Productie>& P, char S) : m_VN{ VN }, m_VT{ VT }, m_P{ P }, m_S{ S } {}
 
-std::istream& operator>>(std::istream& in, Gramatica& gramatica) 
+std::istream& operator>>(std::istream& in, Gramatica& gramatica)
 {
 	int nrNeterminale, nrTerminale, nrProductii;
 	in >> nrNeterminale;
-	for (int i = 0; i < nrNeterminale; i++) 
+	for (int i = 0; i < nrNeterminale; i++)
 	{
 		char neterminal;
 		in >> neterminal;
 		gramatica.m_VN.insert(neterminal);
 	}
 	in >> nrTerminale;
-	for (int i = 0; i < nrTerminale; i++) 
+	for (int i = 0; i < nrTerminale; i++)
 	{
 		char terminal;
 		in >> terminal;
@@ -23,7 +23,7 @@ std::istream& operator>>(std::istream& in, Gramatica& gramatica)
 	}
 	in >> gramatica.m_S >> nrProductii;
 	std::string stanga, dreapta;
-	for (int i = 0; i < nrProductii; i++) 
+	for (int i = 0; i < nrProductii; i++)
 	{
 		in >> stanga >> dreapta;
 		gramatica.m_P.emplace(stanga, dreapta);
@@ -37,7 +37,7 @@ std::istream& operator>>(std::istream& in, Gramatica& gramatica)
 	return in;
 }
 
-std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica) 
+std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica)
 {
 	out << "G = ({ ";
 	for (char ch : gramatica.m_VN)
@@ -60,65 +60,65 @@ std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica)
 	return out;
 }
 
-const std::set<char>& Gramatica::GetVN() const 
-{ 
-	return m_VN; 
+const std::set<char>& Gramatica::GetVN() const
+{
+	return m_VN;
 }
 
-void Gramatica::SetVN(const std::set<char>& VN) 
-{ 
-	m_VN = VN; 
+void Gramatica::SetVN(const std::set<char>& VN)
+{
+	m_VN = VN;
 }
 
-const std::set<char>& Gramatica::GetVT() const 
-{ 
+const std::set<char>& Gramatica::GetVT() const
+{
 	return m_VT;
 }
 
-void Gramatica::SetVT(const std::set<char>& VT) 
-{ 
-	m_VT = VT; 
-}
-
-const std::set<Productie>& Gramatica::GetP() const 
+void Gramatica::SetVT(const std::set<char>& VT)
 {
-	return m_P; 
+	m_VT = VT;
 }
 
-void Gramatica::SetP(const std::set<Productie>& P) 
-{ 
-	m_P = P; 
+const std::set<Productie>& Gramatica::GetP() const
+{
+	return m_P;
 }
 
-char Gramatica::GetS() const 
-{ 
-	return m_S; 
+void Gramatica::SetP(const std::set<Productie>& P)
+{
+	m_P = P;
 }
 
-void Gramatica::SetS(char S) 
-{ 
-	m_S = S; 
+char Gramatica::GetS() const
+{
+	return m_S;
 }
 
-void Gramatica::generare(int nrCuvinte) 
+void Gramatica::SetS(char S)
+{
+	m_S = S;
+}
+
+void Gramatica::generare(int nrCuvinte)
 {
 	m_cuvinteGenerate.clear();
 	std::string cuvantGenerat;
 	std::random_device rd;
 	std::mt19937 eng(rd());
-	while (m_cuvinteGenerate.size() < nrCuvinte) 
+	while (m_cuvinteGenerate.size() < nrCuvinte)
 	{
-		cuvantGenerat = std::string{ 1, m_S };
+		cuvantGenerat = std::string{ m_S };
 		while (true) {
 			std::set<Productie> productiiAplicabile;
-			for (const Productie& productie : m_P) 
+			for (const Productie& productie : m_P)
 			{
-				if (cuvantGenerat.find(productie.first) != std::string::npos) 
+				if (cuvantGenerat.find(productie.first) != std::string::npos)
 				{
 					productiiAplicabile.insert(productie);
 				}
 			}
-			if (productiiAplicabile.empty()) 
+			if (productiiAplicabile.empty())
 			{
 				m_cuvinteGenerate.insert(cuvantGenerat);
 				break;
@@ -131,21 +131,21 @@ void Gramatica::generare(int nrCuvinte)
 			std::advance(it, indexProductie);
 			const Productie& productieSelectata = *it;
 			const auto& [stanga, dreapta] = productieSelectata;
-			
+
 			// Alege random o pozitie in care se poate aplica o productie
 			std::vector<size_t> pozitiiPosibile;
 			size_t pozitie = cuvantGenerat.find(stanga);
-			while (pozitie != std::string::npos) 
+			while (pozitie != std::string::npos)
 			{
 				pozitiiPosibile.push_back(pozitie);
 				pozitie = cuvantGenerat.find(stanga, pozitie + 1);
 			}
 			std::uniform_int_distribution<int> distribution2(0, pozitiiPosibile.size() - 1);
 			int pozitieInlocuire = pozitiiPosibile[distribution2(eng)];
-			std::cout << cuvantGenerat.substr(1) << " => ";
+			std::cout << cuvantGenerat << " => ";
 			cuvantGenerat.replace(pozitieInlocuire, stanga.length(), dreapta == "@" ? "" : dreapta);
 		}
-		std::cout << cuvantGenerat.substr(1) << "\n\n";
+		std::cout << cuvantGenerat << "\n\n";
 	}
 }
 
@@ -278,4 +278,46 @@ bool Gramatica::esteRegulata() const
 		}
 	}
 	return true;
+}
+
+AutomatFinit Gramatica::transformaInAutomatFinit() const
+{
+	if (!esteRegulata())
+	{
+		std::cout << "Gramatica nu este regulata\n";
+		return AutomatFinit();
+	}
+	AutomatFinit automatFinit;
+	std::set<std::string> stari;
+	std::set<std::string> stariFinale;
+	FunctieTranzitie functieTranzitie;
+	for (const char neterminal : m_VN)
+	{
+		stari.insert({ std::string{ neterminal } });
+	}
+	stari.insert("T");
+	for (const auto& [stanga, dreapta] : m_P)
+	{
+		std::string stare1{ stanga };
+		char simbol = dreapta[0];
+		std::string stare2 = dreapta.size() == 2 ? std::string{ dreapta[1] } : "T";
+		if (simbol != '@')
+		{
+			functieTranzitie[{stare1, simbol}].push_back(stare2);
+		}
+		if (dreapta.size() == 1 && simbol == '@')
+		{
+			stariFinale.insert(stare1);
+		}
+	}
+	if (!stariFinale.empty())
+	{
+		stariFinale.insert("T");
+	}
+	automatFinit.setStari(stari);
+	automatFinit.setAlfabet(m_VT);
+	automatFinit.setStareInitiala(std::string{ m_S });
+	automatFinit.setStariFinale(stariFinale);
+	automatFinit.setFunctieTranzitie(functieTranzitie);
+	return automatFinit;
 }

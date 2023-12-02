@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AutomatFinit.h"
 #include <iostream>
 #include <string>
 #include <set>
@@ -40,4 +41,5 @@ public:
 	void generare(int nrCuvinte);
 	bool verificare() const;
 	bool esteRegulata() const;
+	AutomatFinit transformaInAutomatFinit() const;
 };
