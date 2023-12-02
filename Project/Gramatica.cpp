@@ -4,214 +4,278 @@ Gramatica::Gramatica() : m_VN{ {} }, m_VT{ {} }, m_P{ {} }, m_S{ 'S' } {}
 
 Gramatica::Gramatica(const std::set<char>& VN, const std::set<char>& VT, const std::set<Productie>& P, char S) : m_VN{ VN }, m_VT{ VT }, m_P{ P }, m_S{ S } {}
 
-Gramatica::~Gramatica() {}
-
-std::istream& operator>>(std::istream& in, Gramatica& gramatica) {
+std::istream& operator>>(std::istream& in, Gramatica& gramatica) 
+{
 	int nrNeterminale, nrTerminale, nrProductii;
 	in >> nrNeterminale;
-	for (int i = 0; i < nrNeterminale; i++) {
+	for (int i = 0; i < nrNeterminale; i++) 
+	{
 		char neterminal;
 		in >> neterminal;
 		gramatica.m_VN.insert(neterminal);
 	}
 	in >> nrTerminale;
-	for (int i = 0; i < nrTerminale; i++) {
+	for (int i = 0; i < nrTerminale; i++) 
+	{
 		char terminal;
 		in >> terminal;
 		gramatica.m_VT.insert(terminal);
 	}
 	in >> gramatica.m_S >> nrProductii;
 	std::string stanga, dreapta;
-	for (int i = 0; i < nrProductii; i++) {
+	for (int i = 0; i < nrProductii; i++) 
+	{
 		in >> stanga >> dreapta;
 		gramatica.m_P.emplace(stanga, dreapta);
 	}
 	gramatica.m_VN.erase('\0'); // Remove null character from m_VN
 	gramatica.m_VT.erase('\0'); // Remove null character from m_VT
-	std::set<Productie>::iterator it = gramatica.m_P.begin();
 	if (!gramatica.m_P.empty())
-		gramatica.m_P.erase(it);
-
+	{
+		gramatica.m_P.erase(gramatica.m_P.begin());
+	}
 	return in;
 }
 
-std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica) {
-	out << "G = ({";
+std::ostream& operator<<(std::ostream& out, const Gramatica& gramatica) 
+{
+	out << "G = ({ ";
 	for (char ch : gramatica.m_VN)
+	{
 		out << ch << " ";
-	out << "}, {";
+	}
+	out << "}, { ";
 	for (char ch : gramatica.m_VT)
+	{
 		out << ch << " ";
+	}
 	out << "}, " << gramatica.m_S << ", P}\n";
-	for (const auto& productie : gramatica.m_P)
-		if (!productie.first.empty())
-			out << productie.first << "->" << productie.second << "\n\n";
+	for (const auto& [stanga, dreapta] : gramatica.m_P)
+	{
+		if (!stanga.empty())
+		{
+			out << stanga << " -> " << dreapta << "\n\n";
+		}
+	}
 	return out;
 }
 
-const std::set<char>& Gramatica::GetVN() const { return m_VN; }
+const std::set<char>& Gramatica::GetVN() const 
+{ 
+	return m_VN; 
+}
 
-void Gramatica::SetVN(const std::set<char>& VN) { m_VN = VN; }
+void Gramatica::SetVN(const std::set<char>& VN) 
+{ 
+	m_VN = VN; 
+}
 
-const std::set<char>& Gramatica::GetVT() const { return m_VT; }
+const std::set<char>& Gramatica::GetVT() const 
+{ 
+	return m_VT;
+}
 
-void Gramatica::SetVT(const std::set<char>& VT) { m_VT = VT; }
+void Gramatica::SetVT(const std::set<char>& VT) 
+{ 
+	m_VT = VT; 
+}
 
-const std::set<Productie>& Gramatica::GetP() const { return m_P; }
+const std::set<Productie>& Gramatica::GetP() const 
+{
+	return m_P; 
+}
 
-void Gramatica::SetP(const std::set<Productie>& P) { m_P = P; }
+void Gramatica::SetP(const std::set<Productie>& P) 
+{ 
+	m_P = P; 
+}
 
-char Gramatica::GetS() const { return m_S; }
+char Gramatica::GetS() const 
+{ 
+	return m_S; 
+}
 
-void Gramatica::SetS(char S) { m_S = S; }
+void Gramatica::SetS(char S) 
+{ 
+	m_S = S; 
+}
 
-void Gramatica::generare(int nrCuvinte) {
-	m_cuvinteGenerate.clear(); // Goleste set ul de cuvinte generate
+void Gramatica::generare(int nrCuvinte) 
+{
+	m_cuvinteGenerate.clear();
 	std::string cuvantGenerat;
-
-
 	std::random_device rd;
 	std::mt19937 eng(rd());
-	
-
-	while (m_cuvinteGenerate.size() < nrCuvinte) {
-	    cuvantGenerat = std::string(1, m_S); // Pornim de la simbolul de start
-
+	while (m_cuvinteGenerate.size() < nrCuvinte) 
+	{
+		cuvantGenerat = std::string{ 1, m_S };
 		while (true) {
-			std::set<std::pair<std::string, std::string>> productiiAplicabile;
-
-			for (const Productie& prod : m_P) {
-				if (cuvantGenerat.find(prod.first) != std::string::npos) {
-					productiiAplicabile.insert(prod);
+			std::set<Productie> productiiAplicabile;
+			for (const Productie& productie : m_P) 
+			{
+				if (cuvantGenerat.find(productie.first) != std::string::npos) 
+				{
+					productiiAplicabile.insert(productie);
 				}
 			}
-
-			if (productiiAplicabile.empty()) {
+			if (productiiAplicabile.empty()) 
+			{
 				m_cuvinteGenerate.insert(cuvantGenerat);
 				break;
 			}
-            
-			std::uniform_int_distribution<int> distr(0, productiiAplicabile.size() - 1);
-			int indexProductie = distr(eng);
+			std::uniform_int_distribution<int> distribution(0, productiiAplicabile.size() - 1);
+			int indexProductie = distribution(eng);
 
-
-
-			// Find the selected production using iterators
+			// Gaseste productia selectata folosind iteratori
 			auto it = productiiAplicabile.begin();
 			std::advance(it, indexProductie);
-			const Productie& selectedProd = *it;
-
+			const Productie& productieSelectata = *it;
+			const auto& [stanga, dreapta] = productieSelectata;
 			
-			//pentru a alege random o pozitie in care se poate aplica o productie
+			// Alege random o pozitie in care se poate aplica o productie
 			std::vector<size_t> pozitiiPosibile;
-			size_t pozitie = cuvantGenerat.find(selectedProd.first);
-
-			while (pozitie != std::string::npos) {
+			size_t pozitie = cuvantGenerat.find(stanga);
+			while (pozitie != std::string::npos) 
+			{
 				pozitiiPosibile.push_back(pozitie);
-				pozitie = cuvantGenerat.find(selectedProd.first, pozitie + 1);
+				pozitie = cuvantGenerat.find(stanga, pozitie + 1);
 			}
-
-			std::uniform_int_distribution<int> distr2(0, pozitiiPosibile.size() - 1);
-			int pozitieInlocuire = pozitiiPosibile[distr2(eng)];
-
-			//int pozitieInlocuire = cuvantGenerat.find(selectedProd.first);
-			
-			std::cout << cuvantGenerat << " => ";
-			if(selectedProd.second == "@")
-			cuvantGenerat.replace(pozitieInlocuire, selectedProd.first.length(), "");
-			else
-			cuvantGenerat.replace(pozitieInlocuire, selectedProd.first.length(), selectedProd.second);
+			std::uniform_int_distribution<int> distribution2(0, pozitiiPosibile.size() - 1);
+			int pozitieInlocuire = pozitiiPosibile[distribution2(eng)];
+			std::cout << cuvantGenerat.substr(1) << " => ";
+			cuvantGenerat.replace(pozitieInlocuire, stanga.length(), dreapta == "@" ? "" : dreapta);
 		}
-		std::cout << cuvantGenerat << "\n\n";
+		std::cout << cuvantGenerat.substr(1) << "\n\n";
 	}
-
-	// Afiseaza cuvintele generate
-	//for (const std::string& cuvant : m_cuvinteGenerate) {
-	//	std::cout << cuvant << std::endl;
-	//}
 }
 
-bool Gramatica::verificare()
+bool Gramatica::verificare() const
 {
-	if (m_VN.empty() || m_VT.empty()) {
-		std::cout << "gramatica invalida : VN sau NT sunt vide \n";
+	return verificareSeturiVide() && verificareIntersectieVNVT() && verificareSInVN() && verificareProductii() && verificareCaractereProductii() && verificareProductieCuS();
+}
+
+bool Gramatica::verificareSeturiVide() const
+{
+	if (m_VN.empty() || m_VT.empty())
+	{
+		std::cout << "Gramatica invalida: VN sau VT sunt vide\n";
 		return false;
 	}
-	// m_VT si m_VN intersectie nula
-	for (auto caracter : m_VN)
+	return true;
+}
+
+bool Gramatica::verificareIntersectieVNVT() const
+{
+	for (const auto neterminal : m_VN)
 	{
-		if (m_VT.find(caracter) != m_VT.end())
+		if (m_VT.find(neterminal) != m_VT.end())
 		{
-			std::cout << "gramatica invalida : caractere din VN se afla in VT \n";
+			std::cout << "Gramatica invalida: caractere din VN se afla in VT\n";
 			return false;
 		}
 	}
-	for (auto caracter : m_VT)
+	for (const auto terminal : m_VT)
 	{
-		if (m_VN.find(caracter) != m_VN.end())
+		if (m_VN.find(terminal) != m_VN.end())
 		{
-			std::cout << "gramatica invalida : caractere din VT se afla in VN \n";
+			std::cout << "Gramatica invalida: caractere din VT se afla in VN\n";
 			return false;
 		}
 	}
+	return true;
+}
 
-	// (2) S în VN
-	if (m_VN.find(m_S) == m_VN.end()) {
-		std::cout << "gramatica invalida : m_S nu se afla in VN\n";
+bool Gramatica::verificareSInVN() const
+{
+	if (m_VN.find(m_S) == m_VN.end())
+	{
+		std::cout << "Gramatica invalida : S nu se afla in VN\n";
 		return false;
 	}
+	return true;
+}
 
-
-	// fiecare productie sa aiba macar un neterminal in stanga
+bool Gramatica::verificareProductii() const
+{
 	bool areNeterminal;
-	for (const auto& productie : m_P) {
+	for (const auto& [stanga, _] : m_P)
+	{
 		areNeterminal = false;
-
-		for (auto caracter : m_VN)
+		for (const auto neterminal : m_VN)
 		{
-			if (productie.first.find(caracter) != std::string::npos)
+			if (stanga.find(neterminal) != std::string::npos)
 			{
 				areNeterminal = true;
 			}
 		}
 		if (areNeterminal == false)
 		{
-			std::cout << "gramatica invalida : exista productie care nu are nici macar un neterminal in stanga \n";
+			std::cout << "Gramatica invalida: productie fara neterminal in stanga\n";
 			return false;
 		}
 	}
+	return true;
+}
 
-	for (auto& productie : m_P)
+bool Gramatica::verificareCaractereProductii() const
+{
+	for (const auto& [stanga, dreapta] : m_P)
 	{
-		for (char c : productie.first)
+		for (const char caracter : stanga + dreapta)
 		{
-			if (m_VN.find(c) == m_VN.end()  && m_VT.find(c) == m_VT.end())
+			if (m_VN.find(caracter) == m_VN.end() && m_VT.find(caracter) == m_VT.end())
 			{
-				std::cout << "gramatica invalida : productiile contin caractere care nu sunt in VN sau VT \n";
+				std::cout << "Gramatica invalida: caractere necunoscute in productii\n";
 				return false;
 			}
 		}
-		for (char c : productie.second)
+	}
+	return true;
+}
+
+bool Gramatica::verificareProductieCuS() const
+{
+	bool existaProductieCuS = false;
+	for (const auto& [stanga, _] : m_P)
+	{
+		if (stanga[0] == m_S && stanga.size() == 1)
 		{
-			if (m_VN.find(c) == m_VN.end() && m_VT.find(c) == m_VT.end())
+			existaProductieCuS = true;
+		}
+	}
+	if (existaProductieCuS == false)
+		std::cout << "Gramatica invalida : nu exista productie cu doar S in stanga\n";
+	return existaProductieCuS;
+}
+
+bool Gramatica::esteRegulata() const
+{
+	for (const auto& [stanga, dreapta] : m_P)
+	{
+		bool esteNeterminalStanga = stanga.size() == 1 && m_VN.find(stanga[0]) != m_VN.end();
+		bool esteTerminalDreapta = dreapta.size() == 1 && m_VT.find(dreapta[0]) != m_VT.end();
+		bool esteTerminalNeterminalDreapta = dreapta.size() == 2 && m_VT.find(dreapta[0]) != m_VT.end() && m_VN.find(dreapta[1]) != m_VN.end();
+		if (!esteNeterminalStanga)
+		{
+			std::cout << "Gramatica neregulata: in stanga trebuie sa existe un singur neterminal\n";
+			return false;
+		}
+		if (!(esteTerminalDreapta || esteTerminalNeterminalDreapta || dreapta != "@"))
+		{
+			std::cout << "Gramatica neregulata: in dreapta trebuie sa existe un terminal / un terminal urmat de neterminal / elementul vid (lambda)\n";
+			return false;
+		}
+		if (dreapta == "@" && stanga[0] == m_S)
+		{
+			for (const auto& [_, dr] : m_P)
 			{
-				std::cout << "gramatica invalida: productiile contin caractere care nu sunt in VN sau VT \n";
-				return false;
+				if (dr.find(m_S) != std::string::npos)
+				{
+					std::cout << "Gramatica neregulata: simbolul de start nu poate aparea in dreapta productiei daca exista productie S -> @\n";
+					return false;
+				}
 			}
 		}
-
 	}
-	
-	bool exista_producie_cu_S = false;
-	for (const auto& prod : m_P) {
-		if (prod.first[0]==m_S && prod.first.size()== 1) {
-			exista_producie_cu_S = true;
-		}
-	}
-	if(exista_producie_cu_S==false)
-		std::cout << "gramatica invalida : nu exista productie in care doar m_S este in stanga \n";
-	else 
-		std::cout << "gramatica valida : \n";
-
-	return exista_producie_cu_S;
+	return true;
 }
