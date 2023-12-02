@@ -1,4 +1,5 @@
 #include "Gramatica.h"
+#include "AutomatFinit.h"
 #include <fstream>
 
 int main() {
@@ -10,6 +11,16 @@ int main() {
 	}
 	fin >> gramatica;
 	std::cout << gramatica;
+  
+  AutomatFinit automatFinit;
+	std::ifstream fin2{ "inputAutomatFinit.txt" };
+	if (!fin2.is_open()) {
+		std::cerr << "Could not open file!\n";
+		return 1;
+	}
+	fin2 >> automatFinit;
+	std::cout << automatFinit;
+  
 	if (gramatica.verificare())
 	{
 		std::cout << "Gramatica este valida\n";
@@ -18,6 +29,18 @@ int main() {
 			std::cout << "Gramatica este regulata\n\n";
 			gramatica.generare(3);
 		}
-	}
+  }
+	
+	automatFinit.verificareAutomat();
+	automatFinit.esteDeterminist();
+
+	std:: string cuvant = "abbabaa";
+	if(automatFinit.verificareCuvant(automatFinit.getStareInitiala(), cuvant))
+		std::cout << "Cuvantul " << cuvant << " este acceptat de automat\n";
+	else
+		std::cout << "Cuvantul " << cuvant << " nu este acceptat de automat\n";
+  
 	fin.close();
+  fin2.close();
+	return 0;
 }
